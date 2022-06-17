@@ -1,3 +1,40 @@
-from django.shortcuts import render
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from todolist.models import Task
+from todolist.serializers import TaskSerializer
 
-# Create your views here.
+
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True)
+    def get(self, request):
+        post = self.get_object()
+        serializer = TaskSerializer(post, many=True)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None, *args, **kwargs):
+        try:
+            task = Task.objects.get(pk=pk)
+            serializer = TaskSerializer(task, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Task.DoesNotExist:
+            return Response({"detail": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    def taskdelete(self, request, pk=id, *args, **kwargs):
+
+        task = Task.objects.get(pk=pk)
+        task.delete()
+        return Response({"detail": "Task deleted Succesfully."}, status=status.HTTP_204_NO_CONTENT)
