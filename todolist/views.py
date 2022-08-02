@@ -11,15 +11,17 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = TaskSerializer(data=request.data)
+
         if serializer.is_valid():
+
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True)
-    def get(self, request):
-        post = self.get_object()
-        serializer = TaskSerializer(post, many=True)
+    def get(self, request, pk):
+        task = self. get_object(pk)
+        serializer = TaskSerializer(task, many=True)
         return Response(serializer.data)
 
     def update(self, request, pk=None, *args, **kwargs):
@@ -35,6 +37,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def taskdelete(self, request, pk=id, *args, **kwargs):
 
-        task = Task.objects.get(pk=pk)
+        task = Task.objects.get(pk=id)
         task.delete()
         return Response({"detail": "Task deleted Succesfully."}, status=status.HTTP_204_NO_CONTENT)

@@ -20,7 +20,7 @@ from rest_framework.routers import DefaultRouter
 from todolist.views import TaskViewSet
 
 router = DefaultRouter()
-router.register('tasks', TaskViewSet, basename='task')
+router.register('tasks', TaskViewSet, basename='tasks')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
