@@ -35,7 +35,9 @@ class TaskViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk=id, *args, **kwargs):
-
-        task = Task.objects.get(pk=pk)
-        task.delete()
-        return Response({"detail": "Task deleted Succesfully."}, status=status.HTTP_204_NO_CONTENT)
+        try:
+            task = Task.objects.get(pk=pk)
+            if task.delete():
+                return Response({"detail": "Task deleted Succesfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Task.DoesNotExist:
+            return Response({"detail": "Task does not exist."}, status=status.HTTP_400_BAD_REQUEST)
